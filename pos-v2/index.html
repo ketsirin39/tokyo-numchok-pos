@@ -6,7 +6,24 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>POS โตเกียวนำโชค V2</h1>
-<p>เริ่มระบบใหม่เรียบร้อย</p>
+
+<h1>🍡 POS โตเกียวนำโชค</h1>
+
+<div class="menu">
+  <button onclick="addItem('ไส้เค็มดั้งเดิม',15)">ไส้เค็มดั้งเดิม 15฿</button>
+  <button onclick="addItem('หมูหยองพริกเผา',15)">หมูหยองพริกเผา 15฿</button>
+  <button onclick="addItem('หมูสับพริกเผา',18)">หมูสับพริกเผา 18฿</button>
+  <button onclick="addItem('หมูสับไข่เค็ม',18)">หมูสับไข่เค็ม 18฿</button>
+</div>
+
+<h2>🛒 ตะกร้าสินค้า</h2>
+<ul id="cart"></ul>
+
+<h2>รวมทั้งหมด: <span id="total">0</span> บาท</h2>
+
+<button onclick="clearCart()">ล้างตะกร้า</button>
+
+<script src="script.js"></script>
+
 </body>
 </html>
