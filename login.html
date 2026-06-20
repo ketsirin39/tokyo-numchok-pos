@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>โตเกียวนำโชค — เข้าสู่ระบบ Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #FFF0F5 0%, #FFE8F5 40%, #F5E8FF 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ฟองพาสเทลลอยหลังฉาก */
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.35;
+      animation: float-bubble 8s ease-in-out infinite;
+    }
+    @keyframes float-bubble {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-30px) scale(1.05); }
+    }
+
+    .login-card {
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(18px);
+      border: 1.5px solid rgba(255,179,198,0.45);
+      border-radius: 28px;
+      padding: 42px 40px 36px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 12px 48px rgba(255,107,157,0.14), 0 2px 8px rgba(255,143,171,0.1);
+      position: relative;
+      z-index: 10;
+      animation: card-drop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes card-drop {
+      from { transform: translateY(-30px) scale(0.94); opacity: 0; }
+      to   { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .login-logo .logo-emoji {
+      font-size: 3.2rem;
+      display: block;
+      animation: bounce-logo 2.5s ease-in-out infinite;
+    }
+    @keyframes bounce-logo {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+    .login-logo h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FF8FAB, #C77DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-top: 6px;
+    }
+    .login-logo p {
+      font-size: 0.82rem;
+      color: #C77DFF;
+      font-weight: 600;
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    .login-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .login-divider span {
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(90deg, transparent, #FFB3C6, transparent);
+    }
+    .login-divider small {
+      font-size: 0.75rem;
+      color: #FFB3C6;
+      font-weight: 600;
+    }
+
+    .field-group {
+      margin-bottom: 16px;
+    }
+    .field-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #C77DFF;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .field-wrap {
+      position: relative;
+    }
+    .field-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.05rem;
+      pointer-events: none;
+    }
+    .login-input {
+      width: 100%;
+      padding: 11px 14px 11px 40px;
+      border: 2px solid #F0D0FF;
+      border-radius: 12px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.9);
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s, transform 0.15s;
+      color: #4A4A4A;
+    }
+    .login-input:focus {
+      border-color: #C77DFF;
+      box-shadow: 0 0 0 4px rgba(199,125,255,0.15);
+      transform: translateY(-1px);
+    }
+    .login-input::placeholder { color: #D4B0FF; }
+
+    .toggle-pw {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #D4B0FF;
+      padding: 0;
+      transition: color 0.2s;
+    }
+    .toggle-pw:hover { color: #C77DFF; }
+
+    .error-msg {
+      background: linear-gradient(135deg, #FFE4EF, #FFD6E7);
+      border: 1.5px solid #FFB3C6;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 0.85rem;
+      color: #FF6B9D;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: none;
+      animation: shake 0.4s ease;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60%  { transform: translateX(-6px); }
+      40%, 80%  { transform: translateX(6px); }
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #C77DFF, #FF8FAB);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 18px rgba(199,125,255,0.4);
+      letter-spacing: 0.3px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-login::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 26px rgba(199,125,255,0.5);
+    }
+    .btn-login:hover::after { opacity: 1; }
+    .btn-login:active { transform: scale(0.97); }
+
+    /* pulse ring on click */
+    @keyframes ring-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(199,125,255,0.6); }
+      70%  { box-shadow: 0 0 0 16px rgba(199,125,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(199,125,255,0); }
+    }
+    .btn-login.pulsing { animation: ring-pulse 0.55s ease; }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 18px;
+      font-size: 0.82rem;
+      color: #C77DFF;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: #FF8FAB; }
+
+    .flowers {
+      position: absolute;
+      font-size: 1.6rem;
+      opacity: 0.18;
+      animation: spin-slow 20s linear infinite;
+    }
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ฟองลอยหลังฉาก -->
+  <div class="bubble" style="width:180px;height:180px;background:#FFD6E7;top:-40px;left:-60px;animation-delay:0s"></div>
+  <div class="bubble" style="width:120px;height:120px;background:#E8D5FF;bottom:60px;right:-30px;animation-delay:2s"></div>
+  <div class="bubble" style="width:90px;height:90px;background:#FFE8F5;bottom:-20px;left:20%;animation-delay:4s"></div>
+  <div class="bubble" style="width:60px;height:60px;background:#D5F0FF;top:30%;right:10%;animation-delay:1.5s"></div>
+  <div class="flowers" style="top:10px;right:40px;animation-delay:0s">🌸</div>
+  <div class="flowers" style="bottom:20px;left:30px;animation-direction:reverse">🌺</div>
+
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="logo-emoji">🌸</span>
+      <h1>โตเกียวนำโชค</h1>
+      <p>⚙️ ระบบจัดการผู้ดูแล</p>
+    </div>
+
+    <div class="login-divider">
+      <span></span><small>เข้าสู่ระบบ</small><span></span>
+    </div>
+
+    <div id="errMsg" class="error-msg">❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+
+    <div class="field-group">
+      <label class="field-label">👤 ชื่อผู้ใช้</label>
+      <div class="field-wrap">
+        <span class="field-icon">🧑</span>
+        <input class="login-input" type="text" id="username"
+               placeholder="กรอกชื่อผู้ใช้..." autocomplete="username"
+               onkeydown="if(event.key==='Enter')document.getElementById('password').focus()">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">🔒 รหัสผ่าน</label>
+      <div class="field-wrap">
+        <span class="field-icon">🔑</span>
+        <input class="login-input" type="password" id="password"
+               placeholder="กรอกรหัสผ่าน..." autocomplete="current-password"
+               onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="toggle-pw" type="button" onclick="togglePw()" id="toggleBtn" title="แสดง/ซ่อนรหัสผ่าน">👁️</button>
+      </div>
+    </div>
+
+    <button class="btn-login" id="loginBtn" onclick="doLogin()">
+      🔓 เข้าสู่ระบบ Admin
+    </button>
+
+    <a href="index.html" class="back-link">← กลับหน้าขาย</a>
+  </div>
+
+<script>
+  // ─── ตรวจสอบว่า login อยู่แล้วหรือไม่ ──────────────────────────────────────
+  if (sessionStorage.getItem('admin_auth') === 'ok') {
+    window.location.href = 'admin.html';
+  }
+
+  // ─── ข้อมูล login ─────────────────────────────────────────────────────────
+  const ADMIN_USER = 'Mint';
+  const ADMIN_PASS = '5555';
+
+  function doLogin() {
+    const user = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value;
+    const btn  = document.getElementById('loginBtn');
+
+    // Pulse animation on button
+    btn.classList.remove('pulsing');
+    void btn.offsetWidth;
+    btn.classList.add('pulsing');
+    setTimeout(() => btn.classList.remove('pulsing'), 600);
+
+    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+      // สำเร็จ
+      sessionStorage.setItem('admin_auth', 'ok');
+      btn.textContent = '✅ เข้าสู่ระบบสำเร็จ...';
+      btn.style.background = 'linear-gradient(135deg,#A8E6CF,#56C596)';
+      setTimeout(() => { window.location.href = 'admin.html'; }, 600);
+    } else {
+      // ล้มเหลว
+      const err = document.getElementById('errMsg');
+      err.style.display = 'block';
+      document.getElementById('password').value = '';
+      document.getElementById('password').focus();
+      setTimeout(() => { err.style.display = 'none'; }, 3500);
+    }
+  }
+
+  function togglePw() {
+    const inp = document.getElementById('password');
+    const btn = document.getElementById('toggleBtn');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      btn.textContent = '🙈';
+    } else {
+      inp.type = 'password';
+      btn.textContent = '👁️';
+    }
+  }
+
+  // Focus username on load
+  document.getElementById('username').focus();
+</script>
+</body>
+</html>

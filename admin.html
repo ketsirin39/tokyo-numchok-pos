@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>โตเกียวนำโชค — Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: linear-gradient(135deg,#F5E8FF 0%,#FFF0F5 50%,#E8F0FF 100%); }
+    .admin-header { background: linear-gradient(135deg,#C77DFF 0%,#FF8FAB 100%); }
+    .logout-btn {
+      background: rgba(255,255,255,0.22); color: white;
+      border: 1.5px solid rgba(255,255,255,0.4); border-radius: 20px;
+      padding: 7px 15px; font-family:'Sarabun',sans-serif;
+      font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.2s;
+    }
+    .logout-btn:hover { background:rgba(255,255,255,0.38); }
+    .admin-badge { display:flex; align-items:center; gap:8px; color:white; font-size:0.85rem; font-weight:600; }
+    .admin-avatar { width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; border:1.5px solid rgba(255,255,255,0.5); }
+    .admin-tab-btn.active { color:#C77DFF; border-bottom-color:#C77DFF; }
+    .admin-tab-btn:hover { color:#C77DFF; }
+    .stat-card { transition:transform 0.2s,box-shadow 0.2s; cursor:default; }
+    .stat-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(199,125,255,0.18); }
+    .stat-val { color:#C77DFF; }
+    .section-card { border-color:#EDD5FF; }
+    .section-card h3 { color:#C77DFF; }
+    .btn-primary { background:linear-gradient(135deg,#C77DFF,#FF8FAB); }
+    .btn-primary:hover { transform:translateY(-1px); box-shadow:0 5px 14px rgba(199,125,255,0.4); }
+    .data-table th { background:linear-gradient(135deg,#C77DFF,#FF8FAB); }
+    .top-rank { background:linear-gradient(135deg,#C77DFF,#FF8FAB); }
+    @keyframes glow-pop {
+      0%   { box-shadow:0 0 0 0 rgba(199,125,255,0.7); }
+      60%  { box-shadow:0 0 0 14px rgba(199,125,255,0); }
+      100% { box-shadow:0 0 0 0 rgba(199,125,255,0); }
+    }
+    .glow-pulse { animation:glow-pop 0.45s ease; }
+    .bg-bubble { position:fixed; border-radius:50%; opacity:0.1; pointer-events:none; z-index:0; animation:float-up 10s ease-in-out infinite; }
+    @keyframes float-up { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-20px) scale(1.04)} }
+    .admin-wrapper { position:relative; z-index:1; }
+
+    /* Topping table badges */
+    .badge-topping { background:#FFF3CD; color:#856404; }
+
+    /* Section divider inside menus tab */
+    .section-sep { border:none; border-top:2px dashed #EDD5FF; margin:22px 0; }
+  </style>
+</head>
+<body>
+
+<script>if(sessionStorage.getItem('admin_auth')!=='ok'){window.location.replace('login.html');}</script>
+
+<div class="bg-bubble" style="width:220px;height:220px;background:#C77DFF;top:-60px;left:-80px"></div>
+<div class="bg-bubble" style="width:140px;height:140px;background:#FF8FAB;bottom:80px;right:-40px;animation-delay:3s"></div>
+<div class="bg-bubble" style="width:80px;height:80px;background:#A8D8FF;top:40%;left:5%;animation-delay:1.5s"></div>
+
+<!-- HEADER -->
+<header class="header admin-header">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="animation:spin-logo 8s linear infinite;display:inline-block;line-height:0;margin-right:2px"><svg viewBox="0 0 44 44" width="38" height="38" xmlns="http://www.w3.org/2000/svg"><polygon points="7,20 11,6 18,16" fill="#9E9E9E"/><polygon points="8,19 11,8 17,15" fill="#FFAEC0"/><polygon points="37,20 33,6 26,16" fill="#9E9E9E"/><polygon points="36,19 33,8 27,15" fill="#FFAEC0"/><circle cx="22" cy="26" r="16" fill="#D0D0D0"/><ellipse cx="11" cy="30" rx="4" ry="2.8" fill="#FFAEC0" opacity="0.6"/><ellipse cx="33" cy="30" rx="4" ry="2.8" fill="#FFAEC0" opacity="0.6"/><ellipse cx="16" cy="23" rx="3" ry="3.5" fill="#1A1A1A"/><circle cx="17.2" cy="21.5" r="1.2" fill="white"/><circle cx="15.5" cy="24" r="0.5" fill="white"/><ellipse cx="28" cy="23" rx="3" ry="3.5" fill="#1A1A1A"/><circle cx="29.2" cy="21.5" r="1.2" fill="white"/><circle cx="27.5" cy="24" r="0.5" fill="white"/><path d="M20.5,27 L22,29 L23.5,27 Z" fill="#FF8FAB"/><path d="M20,29.2 Q22,31.5 24,29.2" stroke="#ccc" stroke-width="0.9" fill="none" stroke-linecap="round"/><line x1="2" y1="27" x2="14" y2="28" stroke="rgba(255,255,255,0.85)" stroke-width="1"/><line x1="2" y1="30" x2="14" y2="30" stroke="rgba(255,255,255,0.85)" stroke-width="1"/><line x1="30" y1="28" x2="42" y2="27" stroke="rgba(255,255,255,0.85)" stroke-width="1"/><line x1="30" y1="30" x2="42" y2="30" stroke="rgba(255,255,255,0.85)" stroke-width="1"/></svg></span>
+    <div>
+      <h1>โตเกียวนำโชค — Admin</h1>
+      <div class="header-sub">ระบบจัดการร้าน &amp; รายงาน</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="admin-badge">
+      <div class="admin-avatar">😺</div>
+      <span>Mint</span>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">🚪 ออกจากระบบ</button>
+  </div>
+</header>
+<style>@keyframes spin-logo{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
+
+<div class="admin-wrapper">
+<div class="admin-wrapper-inner">
+
+  <!-- TABS -->
+  <div class="admin-tabs">
+    <button class="admin-tab-btn active" onclick="switchTab('dashboard',this)">📊 แดชบอร์ด</button>
+    <button class="admin-tab-btn"        onclick="switchTab('menus',this)">🍡 จัดการเมนู</button>
+    <button class="admin-tab-btn"        onclick="switchTab('history',this)">📋 ประวัติการขาย</button>
+  </div>
+
+  <!-- ===== TAB: DASHBOARD ===== -->
+  <div id="tab-dashboard" class="tab-section active">
+    <div class="stats-grid">
+      <div class="stat-card" onclick="glowCard(this)"><div class="stat-val" id="statRevToday">฿0</div><div class="stat-label">ยอดขายวันนี้</div></div>
+      <div class="stat-card" onclick="glowCard(this)"><div class="stat-val" id="statOrdersToday">0</div><div class="stat-label">ออเดอร์วันนี้</div></div>
+      <div class="stat-card" onclick="glowCard(this)"><div class="stat-val" id="statRevTotal">฿0</div><div class="stat-label">ยอดขายรวมทั้งหมด</div></div>
+      <div class="stat-card" onclick="glowCard(this)"><div class="stat-val" id="statOrdersTotal">0</div><div class="stat-label">ออเดอร์ทั้งหมด</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+      <div class="section-card"><h3>🏆 เมนูขายดีวันนี้</h3><div id="topToday"></div></div>
+      <div class="section-card"><h3>⭐ เมนูขายดีทั้งหมด</h3><div id="topAll"></div></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: MENUS ===== -->
+  <div id="tab-menus" class="tab-section">
+
+    <!-- ── ส่วน: จัดการเมนู ── -->
+    <div class="admin-two-col">
+      <!-- ฟอร์มเมนู -->
+      <div class="section-card">
+        <h3 id="formTitle">➕ เพิ่มเมนูใหม่</h3>
+        <input type="hidden" id="editId">
+        <div class="form-group"><label>ชื่อเมนู</label><input class="form-input" id="fName" placeholder="ชื่อเมนู..."></div>
+        <div class="form-group"><label>ราคา (บาท)</label><input class="form-input" id="fPrice" type="number" placeholder="0" min="1"></div>
+        <div class="form-group">
+          <label>หมวดหมู่</label>
+          <select class="form-select" id="fCat">
+            <option value="savory">🥩 ไส้คาว</option>
+            <option value="sweet">🍮 ไส้หวาน</option>
+            <option value="special">⭐ ไส้พิเศษ</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Emoji</label><input class="form-input" id="fEmoji" placeholder="🍡" maxlength="4"></div>
+        <div class="form-group">
+          <label>ตัวเลือกพิเศษ</label>
+          <select class="form-select" id="fOpt">
+            <option value="">ไม่มี</option>
+            <option value="milk">เลือก ราดนม/ไม่ราดนม</option>
+            <option value="choco">เลือก ราดนม/ราดช็อคโกแลต</option>
+            <option value="sauce_opt">เลือก ใส่ซอส/ไม่ใส่ซอส</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-primary" onclick="saveMenu()">💾 บันทึก</button>
+          <button class="btn-secondary" onclick="resetMenuForm()">✖ ยกเลิก</button>
+        </div>
+      </div>
+
+      <!-- รายการเมนู -->
+      <div class="section-card">
+        <h3>📋 รายการเมนูทั้งหมด</h3>
+        <div style="display:flex;gap:7px;margin-bottom:13px;flex-wrap:wrap">
+          <button class="tab-btn active" id="mf_all"     onclick="filterMenuList('all',this)">ทั้งหมด</button>
+          <button class="tab-btn"        id="mf_savory"  onclick="filterMenuList('savory',this)">ไส้คาว</button>
+          <button class="tab-btn"        id="mf_sweet"   onclick="filterMenuList('sweet',this)">ไส้หวาน</button>
+          <button class="tab-btn"        id="mf_special" onclick="filterMenuList('special',this)">ไส้พิเศษ</button>
+        </div>
+        <div id="menuList" style="max-height:420px;overflow-y:auto"></div>
+      </div>
+    </div>
+
+    <hr class="section-sep">
+
+    <!-- ── ส่วน: จัดการท็อปปิ้ง ── -->
+    <div class="admin-two-col">
+      <!-- ฟอร์มท็อปปิ้ง -->
+      <div class="section-card">
+        <h3 id="toppingFormTitle">✨ เพิ่มท็อปปิ้งใหม่</h3>
+        <input type="hidden" id="tEditId">
+        <div class="form-group"><label>ชื่อท็อปปิ้ง</label><input class="form-input" id="tName" placeholder="ชื่อท็อปปิ้ง..."></div>
+        <div class="form-group"><label>ราคา (บาท)</label><input class="form-input" id="tPrice" type="number" placeholder="0" min="1"></div>
+        <div class="form-group"><label>Emoji</label><input class="form-input" id="tEmoji" placeholder="🌽" maxlength="4"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-primary" onclick="saveTopping()">💾 บันทึกท็อปปิ้ง</button>
+          <button class="btn-secondary" onclick="resetToppingForm()">✖ ยกเลิก</button>
+        </div>
+      </div>
+
+      <!-- รายการท็อปปิ้ง -->
+      <div class="section-card">
+        <h3>🌽 ท็อปปิ้งทั้งหมด</h3>
+        <div id="toppingList" style="max-height:420px;overflow-y:auto"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== TAB: HISTORY ===== -->
+  <div id="tab-history" class="tab-section">
+    <div class="section-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+        <h3 style="margin:0">📋 ประวัติการขายทั้งหมด</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="date" id="filterDate" class="form-input" style="width:160px" onchange="renderHistory()">
+          <button class="btn-secondary" onclick="clearDateFilter()">แสดงทั้งหมด</button>
+          <button class="btn-primary" style="background:linear-gradient(135deg,#ff7675,#e17055)"
+                  onclick="if(confirm('ลบประวัติทั้งหมด?')){localStorage.removeItem('tokyo_sales');renderHistory();loadStats()}">
+            🗑️ ล้างข้อมูล
+          </button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>วันที่/เวลา</th><th>ลูกค้า</th><th>เวลารับ</th><th>รายการ</th><th>ยอดรวม</th><th>รับเงิน</th><th>ทอน</th></tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Modal: รายละเอียดออเดอร์ -->
+<div class="modal-overlay" id="orderModal" style="display:none"
+     onclick="if(event.target===this)document.getElementById('orderModal').style.display='none'">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-title" style="color:#C77DFF">🧾 รายละเอียดออเดอร์</div>
+    <div id="orderDetail"></div>
+    <button class="btn-modal-cancel" onclick="document.getElementById('orderModal').style.display='none'" style="margin-top:12px">ปิด</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DEFAULT DATA ─────────────────────────────────────────────────────────────
+const DEFAULT_MENU = [
+  {id:'s1',  name:'ไส้เค็มดั้งเดิม (หมูสับ)',        price:15, cat:'savory',  emoji:'🥩'},
+  {id:'s2',  name:'ไส้เค็มดั้งเดิม (ไส้กรอก)',       price:15, cat:'savory',  emoji:'🌭'},
+  {id:'s3',  name:'ไส้เค็มดั้งเดิม (ไข่)',            price:15, cat:'savory',  emoji:'🥚'},
+  {id:'s4',  name:'หมูหยองพริกเผา',                   price:15, cat:'savory',  emoji:'🥩'},
+  {id:'s5',  name:'หมูสับพริกเผา',                    price:18, cat:'savory',  emoji:'🌶️'},
+  {id:'s6',  name:'หมูสับไข่เค็ม',                    price:18, cat:'savory',  emoji:'🍳'},
+  {id:'sw1', name:'ครีมคัสตาร์ด',                     price:15, cat:'sweet',   emoji:'🍮'},
+  {id:'sw2', name:'สังขยาใบเตย',                      price:15, cat:'sweet',   emoji:'🟢'},
+  {id:'sw3', name:'ชาไทย',                            price:15, cat:'sweet',   emoji:'🧡'},
+  {id:'sw4', name:'ชาเขียว',                          price:15, cat:'sweet',   emoji:'🍵'},
+  {id:'sw5', name:'เผือก',                            price:15, cat:'sweet',   emoji:'💜'},
+  {id:'sw6', name:'ฝอยทอง (เพชรบุรี)',                price:15, cat:'sweet',   emoji:'✨'},
+  {id:'sw7', name:'แป้งหยอด (มินิแพนเค้ก)',           price:2,  cat:'sweet',   emoji:'🥞', opt:'milk', perUnit:true, unit:'ชิ้น'},
+  {id:'sw8', name:'เนยนม (1ชุด 3แผ่น)',               price:20, cat:'sweet',   emoji:'🧈'},
+  {id:'sw9', name:'เนยกระเทียม (1ชุด 3แผ่น)',        price:20, cat:'sweet',   emoji:'🧄'},
+  {id:'sp1', name:'นูเทลล่า',                         price:18, cat:'special', emoji:'🍫', opt:'choco'},
+  {id:'sp2', name:'นูเทลล่า+กล้วยหอม',               price:23, cat:'special', emoji:'🍌', opt:'choco'},
+  {id:'sp3', name:'นูเทลล่า+มาร์เมลโลว์ (เบิร์นไฟ)', price:28, cat:'special', emoji:'🔥', opt:'choco'},
+  {id:'sp4', name:'ปูอัด+ซอสไข่กุ้ง',                price:25, cat:'special', emoji:'🦀'},
+  {id:'sp5', name:'ปูอัด+แฮม+ซอสไข่กุ้ง',            price:30, cat:'special', emoji:'🦀'},
+  {id:'sp6', name:'แฮมชีส',                           price:25, cat:'special', emoji:'🧀', opt:'sauce_opt'},
+  {id:'sp7', name:'พิซซ่า',                           price:30, cat:'special', emoji:'🍕', opt:'sauce_opt'},
+  {id:'sp8', name:'ผักโขม',                           price:20, cat:'special', emoji:'🥬'},
+  {id:'sp9', name:'ผักโขม+ปูอัด+แฮม',                price:30, cat:'special', emoji:'🥬'},
+  {id:'sp10',name:'ผักโขม+ชีส (เบิร์นไฟ)',            price:30, cat:'special', emoji:'🔥'},
+];
+
+const DEFAULT_TOPPINGS = [
+  {id:'t1', name:'ข้าวโพด',             price:5,  emoji:'🌽'},
+  {id:'t2', name:'ฝอยทอง',              price:5,  emoji:'✨'},
+  {id:'t3', name:'เยลลี่',              price:5,  emoji:'🍬'},
+  {id:'t4', name:'ถั่วแดง',             price:10, emoji:'🫘'},
+  {id:'t5', name:'อัลมอนด์',           price:10, emoji:'🌰'},
+  {id:'t6', name:'เม็ดมะม่วงหินพานต์', price:10, emoji:'🥜'},
+];
+
+const CAT_LABELS = {savory:'ไส้คาว', sweet:'ไส้หวาน', special:'ไส้พิเศษ'};
+const CAT_BADGE  = {savory:'badge-savory', sweet:'badge-sweet', special:'badge-special'};
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let menuItems  = [];
+let toppings   = [];
+let menuFilter = 'all';
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+function doLogout() {
+  if (!confirm('ออกจากระบบ Admin ใช่ไหม?')) return;
+  sessionStorage.removeItem('admin_auth');
+  window.location.href = 'login.html';
+}
+
+// ─── STORAGE ─────────────────────────────────────────────────────────────────
+function loadMenu() {
+  const raw = localStorage.getItem('tokyo_menu');
+  menuItems = raw ? JSON.parse(raw) : [...DEFAULT_MENU];
+  if (!raw) localStorage.setItem('tokyo_menu', JSON.stringify(menuItems));
+}
+function persistMenu() { localStorage.setItem('tokyo_menu', JSON.stringify(menuItems)); }
+
+function loadToppingsData() {
+  const raw = localStorage.getItem('tokyo_toppings');
+  toppings = raw ? JSON.parse(raw) : [...DEFAULT_TOPPINGS];
+  if (!raw) localStorage.setItem('tokyo_toppings', JSON.stringify(toppings));
+}
+function persistToppings() { localStorage.setItem('tokyo_toppings', JSON.stringify(toppings)); }
+
+function getSales() { return JSON.parse(localStorage.getItem('tokyo_sales') || '[]'); }
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'dashboard') loadStats();
+  if (name === 'menus')   { renderMenuList(); renderToppingList(); }
+  if (name === 'history')   renderHistory();
+}
+
+// ─── GLOW ─────────────────────────────────────────────────────────────────────
+function glowCard(el) {
+  el.classList.remove('glow-pulse');
+  void el.offsetWidth;
+  el.classList.add('glow-pulse');
+  setTimeout(() => el.classList.remove('glow-pulse'), 500);
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function loadStats() {
+  const sales      = getSales();
+  const today      = new Date().toDateString();
+  const todaySales = sales.filter(s => new Date(s.date).toDateString() === today);
+  document.getElementById('statRevToday').textContent    = '฿' + todaySales.reduce((a,s)=>a+s.total,0).toLocaleString();
+  document.getElementById('statOrdersToday').textContent = todaySales.length;
+  document.getElementById('statRevTotal').textContent    = '฿' + sales.reduce((a,s)=>a+s.total,0).toLocaleString();
+  document.getElementById('statOrdersTotal').textContent = sales.length;
+  renderTopItems('topToday', todaySales);
+  renderTopItems('topAll',   sales);
+}
+
+function renderTopItems(elId, sales) {
+  const count = {};
+  sales.forEach(s => s.items.forEach(it => { count[it.name] = (count[it.name]||0) + it.qty; }));
+  const sorted = Object.entries(count).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const el = document.getElementById(elId);
+  if (!sorted.length) { el.innerHTML = '<div style="color:#ccc;text-align:center;padding:20px">ยังไม่มีข้อมูล</div>'; return; }
+  el.innerHTML = sorted.map(([name,qty],i) => `
+    <div class="top-item" onclick="glowCard(this)">
+      <div class="top-rank">${i+1}</div>
+      <div class="top-name">${name}</div>
+      <div class="top-count">${qty} ชิ้น</div>
+    </div>`).join('');
+}
+
+// ─── MENU MANAGEMENT ──────────────────────────────────────────────────────────
+function filterMenuList(cat, btn) {
+  menuFilter = cat;
+  document.querySelectorAll('[id^="mf_"]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMenuList();
+}
+
+function renderMenuList() {
+  const filtered = menuFilter === 'all' ? menuItems : menuItems.filter(m => m.cat === menuFilter);
+  const el = document.getElementById('menuList');
+  if (!filtered.length) { el.innerHTML = '<div style="color:#ccc;text-align:center;padding:20px">ไม่มีเมนู</div>'; return; }
+  el.innerHTML = `
+    <table class="data-table">
+      <thead><tr><th>เมนู</th><th>ราคา</th><th>หมวด</th><th>จัดการ</th></tr></thead>
+      <tbody>${filtered.map(m=>`
+        <tr>
+          <td>${m.emoji||'🍡'} ${m.name}</td>
+          <td style="font-weight:700;color:#C77DFF">฿${m.price}${m.unit?'/'+m.unit:''}</td>
+          <td><span class="badge ${CAT_BADGE[m.cat]||''}">${CAT_LABELS[m.cat]||m.cat}</span></td>
+          <td>
+            <button class="btn-edit"   onclick="editMenu('${m.id}')">✏️ แก้ไข</button>
+            <button class="btn-delete" onclick="deleteMenu('${m.id}')">🗑️ ลบ</button>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function saveMenu() {
+  const id    = document.getElementById('editId').value;
+  const name  = document.getElementById('fName').value.trim();
+  const price = parseFloat(document.getElementById('fPrice').value);
+  const cat   = document.getElementById('fCat').value;
+  const emoji = document.getElementById('fEmoji').value.trim() || '🍡';
+  const opt   = document.getElementById('fOpt').value;
+  if (!name)         { alert('กรุณาใส่ชื่อเมนู'); return; }
+  if (!price||price<1){ alert('กรุณาใส่ราคาที่ถูกต้อง'); return; }
+  if (id) {
+    const idx = menuItems.findIndex(m => m.id === id);
+    if (idx > -1) menuItems[idx] = {...menuItems[idx], name, price, cat, emoji, opt:opt||undefined};
+    toast('แก้ไขเมนูสำเร็จ ✅');
+  } else {
+    menuItems.push({id:'c'+Date.now(), name, price, cat, emoji, opt:opt||undefined});
+    toast('เพิ่มเมนูสำเร็จ 🎉');
+  }
+  persistMenu(); resetMenuForm(); renderMenuList();
+}
+
+function editMenu(id) {
+  const m = menuItems.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('editId').value  = m.id;
+  document.getElementById('fName').value   = m.name;
+  document.getElementById('fPrice').value  = m.price;
+  document.getElementById('fCat').value    = m.cat;
+  document.getElementById('fEmoji').value  = m.emoji||'';
+  document.getElementById('fOpt').value    = m.opt||'';
+  document.getElementById('formTitle').textContent = '✏️ แก้ไขเมนู';
+  document.getElementById('fName').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function deleteMenu(id) {
+  const m = menuItems.find(x => x.id === id);
+  if (!m || !confirm(`ลบเมนู "${m.name}" ใช่ไหม?`)) return;
+  menuItems = menuItems.filter(x => x.id !== id);
+  persistMenu(); renderMenuList(); toast('ลบเมนูแล้ว 🗑️');
+}
+
+function resetMenuForm() {
+  document.getElementById('editId').value = document.getElementById('fName').value =
+  document.getElementById('fPrice').value = document.getElementById('fEmoji').value = '';
+  document.getElementById('fOpt').value = ''; document.getElementById('fCat').value = 'savory';
+  document.getElementById('formTitle').textContent = '➕ เพิ่มเมนูใหม่';
+}
+
+// ─── TOPPING MANAGEMENT ───────────────────────────────────────────────────────
+function renderToppingList() {
+  const el = document.getElementById('toppingList');
+  if (!toppings.length) { el.innerHTML = '<div style="color:#ccc;text-align:center;padding:20px">ยังไม่มีท็อปปิ้ง</div>'; return; }
+  el.innerHTML = `
+    <table class="data-table">
+      <thead><tr><th>ท็อปปิ้ง</th><th>ราคา</th><th>จัดการ</th></tr></thead>
+      <tbody>${toppings.map(t=>`
+        <tr>
+          <td>${t.emoji||'✨'} ${t.name}</td>
+          <td style="font-weight:700;color:#C77DFF">+฿${t.price}</td>
+          <td>
+            <button class="btn-edit"   onclick="editTopping('${t.id}')">✏️ แก้ไข</button>
+            <button class="btn-delete" onclick="deleteTopping('${t.id}')">🗑️ ลบ</button>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function saveTopping() {
+  const id    = document.getElementById('tEditId').value;
+  const name  = document.getElementById('tName').value.trim();
+  const price = parseFloat(document.getElementById('tPrice').value);
+  const emoji = document.getElementById('tEmoji').value.trim() || '✨';
+  if (!name)          { alert('กรุณาใส่ชื่อท็อปปิ้ง'); return; }
+  if (!price||price<1){ alert('กรุณาใส่ราคาที่ถูกต้อง'); return; }
+  if (id) {
+    const idx = toppings.findIndex(t => t.id === id);
+    if (idx > -1) toppings[idx] = {...toppings[idx], name, price, emoji};
+    toast('แก้ไขท็อปปิ้งสำเร็จ ✅');
+  } else {
+    toppings.push({id:'tp'+Date.now(), name, price, emoji});
+    toast('เพิ่มท็อปปิ้งสำเร็จ 🎉');
+  }
+  persistToppings(); resetToppingForm(); renderToppingList();
+}
+
+function editTopping(id) {
+  const t = toppings.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('tEditId').value = t.id;
+  document.getElementById('tName').value   = t.name;
+  document.getElementById('tPrice').value  = t.price;
+  document.getElementById('tEmoji').value  = t.emoji||'';
+  document.getElementById('toppingFormTitle').textContent = '✏️ แก้ไขท็อปปิ้ง';
+  document.getElementById('tName').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function deleteTopping(id) {
+  const t = toppings.find(x => x.id === id);
+  if (!t || !confirm(`ลบท็อปปิ้ง "${t.name}" ใช่ไหม?`)) return;
+  toppings = toppings.filter(x => x.id !== id);
+  persistToppings(); renderToppingList(); toast('ลบท็อปปิ้งแล้ว 🗑️');
+}
+
+function resetToppingForm() {
+  document.getElementById('tEditId').value = document.getElementById('tName').value =
+  document.getElementById('tPrice').value  = document.getElementById('tEmoji').value = '';
+  document.getElementById('toppingFormTitle').textContent = '✨ เพิ่มท็อปปิ้งใหม่';
+}
+
+// ─── SALES HISTORY ────────────────────────────────────────────────────────────
+function renderHistory() {
+  const fd  = document.getElementById('filterDate').value;
+  let sales = getSales().reverse();
+  if (fd) sales = sales.filter(s => s.date.startsWith(fd));
+  const tbody = document.getElementById('historyBody');
+  if (!sales.length) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#ccc;padding:30px">ยังไม่มีประวัติ</td></tr>`; return; }
+  tbody.innerHTML = sales.map(s => {
+    const d = new Date(s.date);
+    const dateStr = d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
+    const timeStr = d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+    const summary = s.items.map(it=>`${it.emoji}${it.name}×${it.qty}`).join(', ');
+    return `<tr style="cursor:pointer" onclick="showOrder(${s.id})">
+      <td><div style="font-weight:600">${dateStr}</div><div style="font-size:0.75rem;color:#888">${timeStr}</div></td>
+      <td><div>${s.custName}</div>${s.custPhone?`<div style="font-size:0.75rem;color:#aaa">${s.custPhone}</div>`:''}</td>
+      <td>${s.custTime||'—'}</td>
+      <td style="max-width:180px;font-size:0.78rem;color:#666">${summary}</td>
+      <td style="font-weight:800;color:#C77DFF">฿${s.total}</td>
+      <td>฿${s.paid}</td>
+      <td style="color:#27AE60;font-weight:700">฿${s.change}</td>
+    </tr>`;
+  }).join('');
+}
+
+function showOrder(id) {
+  const s = getSales().find(x => x.id === id);
+  if (!s) return;
+  const d = new Date(s.date);
+  const dateStr = d.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+  const timeStr = d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('orderDetail').innerHTML = `
+    <div style="background:#F9F0FF;border-radius:10px;padding:14px;border:1.5px solid #EDD5FF">
+      <div style="text-align:center;margin-bottom:10px">
+        <div style="font-weight:800;color:#C77DFF">😺 โตเกียวนำโชค</div>
+        <div style="font-size:0.8rem;color:#888">${dateStr} ${timeStr}</div>
+        ${s.custName!=='ไม่ระบุ'?`<div style="font-size:0.85rem;margin-top:4px">ลูกค้า: ${s.custName}</div>`:''}
+        ${s.custPhone?`<div style="font-size:0.8rem;color:#888">📞 ${s.custPhone}</div>`:''}
+        ${s.custTime?`<div style="font-size:0.8rem;color:#888">⏰ ${s.custTime}</div>`:''}
+      </div>
+      <hr style="border:none;border-top:1px dashed #EDD5FF;margin:8px 0">
+      ${s.items.map(it=>`
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:0.88rem">
+          <span>${it.emoji} ${it.name} ×${it.qty}</span>
+          <span style="font-weight:700">฿${it.totalPrice}</span>
+        </div>
+        ${it.opts?`<div style="font-size:0.73rem;color:#aaa;padding-left:12px;margin-bottom:4px">${it.opts}</div>`:''}`).join('')}
+      <hr style="border:none;border-top:1px dashed #ccc;margin:8px 0">
+      <div style="display:flex;justify-content:space-between;font-weight:800;color:#C77DFF"><span>ยอดรวม</span><span>฿${s.total}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-top:4px"><span>รับเงิน</span><span>฿${s.paid}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:700;color:#27AE60"><span>เงินทอน</span><span>฿${s.change}</span></div>
+    </div>`;
+  document.getElementById('orderModal').style.display = 'flex';
+}
+
+function clearDateFilter() { document.getElementById('filterDate').value = ''; renderHistory(); }
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+loadMenu();
+loadToppingsData();
+loadStats();
+renderMenuList();
+renderToppingList();
+</script>
+</body>
+</html>

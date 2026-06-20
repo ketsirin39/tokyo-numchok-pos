@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del \"D:\\\\AI-Assisted-Coding\\\\DAY 4\\\\Pos Tokyo numchok\\\\package-lock.json\")",
+      "PowerShell(Remove-Item \"D:\\\\AI-Assisted-Coding\\\\DAY 4\\\\Pos Tokyo numchok\\\\package-lock.json\" -Confirm:$false)",
+      "mcp__visualize__read_me",
+      "mcp__visualize__show_widget"
+    ]
+  }
+}
